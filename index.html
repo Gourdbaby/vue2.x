@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<script src="./watcher.js"></script>
+<script src="./observer.js"></script>
+<script src="./compile.js"></script>
+<script src="./vue.js"></script>
+<body>
+  
+  vue中实现数据双向绑定的方式：
+    1. 模板的编译
+    2. 数据劫持，观察数据变化
+    3. wathcer
+  模板的编译 和 数据的劫持 靠wathcer来关联，模式就是《发布订阅模式》
+
+
+  <div id="app">
+    <input type="text" v-model="message">
+    {{ message}}
+  </div>
+
+
+  <script>
+    const vm = new Vue({
+      el: "#app",
+      data:{
+        message: 'Hello',
+        a: 1,
+        b: 2
+      }
+    })
+  </script>
+</body>
+</html>
