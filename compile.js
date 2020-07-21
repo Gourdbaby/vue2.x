@@ -84,6 +84,7 @@ CompileUtil = {
     })
   },
   text(node, vm, text){ // 处理文本
+    const textVal = this.getTextVal(vm, text)
     const reg = /\{\{([^}]+)\}\}/g
     // text 有可能是这样的值 {{ a }} {{ b }}，所以replace 匹配两次 一次a  一次b
     text.replace(reg, (...arguments) => {
@@ -94,7 +95,6 @@ CompileUtil = {
       })
     })
 
-    const textVal = this.getTextVal(vm, text)
     this.updater.textUpdater(node, textVal)
   },
   setVal(vm, expr, newVal){ // 输入框v-model双向数据绑定
@@ -102,7 +102,7 @@ CompileUtil = {
     return expr.reduce((prev, current, index) => {
       const format = current.replace(/^\s+|\s+$/g, '')
       if(index === expr.length - 1){ // 如果reduce走到了最后一个属性例如c 那就设置新值
-        prev[format] = newVal
+        return prev[format] = newVal
       }
       return prev[format]
     }, vm.$data)
@@ -112,11 +112,12 @@ CompileUtil = {
     new Watcher(vm, value, () => { // 默认不会调用这个回调，在触发watcher的update，就会触发这个回调
       this.updater.modelUpdater(node, this.getVal(vm, value)) // 触发视图更新
     })
+    this.updater.modelUpdater(node, this.getVal(vm, value))
+
     node.addEventListener('input', (e) => {
       const newVal = e.target.value
       this.setVal(vm, value, newVal)
     })
-    this.updater.modelUpdater(node, this.getVal(vm, value))
   },
   updater: {
     textUpdater(node, value){  // 更新文本

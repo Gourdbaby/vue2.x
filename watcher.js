@@ -7,22 +7,26 @@ class Watcher {
     this.expr = expr
     this.cb = cb
 
-    this.value = this.getVal(vm, expr) // 获取老值
+    this.value = this.get() // 获取老值
   }
 
   getVal(vm, expr){ // expr有可能是 message.a.b.c
+    expr = expr.split('.') // [message, a, b, c]
+    return expr.reduce((prev, current) => {
+      return prev[current]
+    }, vm.$data)
+  }
+
+  get(){
     Dep.target = this
     // 在执行编译的时候，会去new Watcher，执行new Watcher会触发 this.value = this.getVal(vm, expr) // 获取老值
     // 这个时候把当前的watcher赋值给Dep的target属性
     // 获取值会触发对象属性的get方法，在get方法中，把当前属性依赖的watcher收集起来
+
+    const value = this.getVal(this.vm, this.expr)
     
-    expr = expr.split('.') // [message, a, b, c]
-    const value = expr.reduce((prev, current) => {
-      return prev[current]
-    }, vm.$data)
-
-    Dep.target = null // get方法存储完watcher以后，清空watcher
-
+    Dep.target = null // get方法存储完watcher以后`，清空watcher
+    
     return value
   }
 
